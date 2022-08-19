@@ -47,7 +47,7 @@ public class CustomerWebController {
     @GetMapping("/")
     public String index() {
 
-        return "crm";
+        return "index";
     }
 
     @GetMapping(value = "/display")
