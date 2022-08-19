@@ -88,7 +88,7 @@ public class OrderWebController {
 
 
     @GetMapping("/details/{id}")
-    public String getOrderDetaiils(@PathVariable String id, Model msg) {
+    public String getOrderDetails(@PathVariable String id, Model msg) {
 
         Order order = orderRepository.findById(Long.valueOf(id))
                 .orElseThrow(() -> new IllegalArgumentException("Order Not Found:" + id));
@@ -135,9 +135,9 @@ public class OrderWebController {
         } else {
             if (orderRepository.save(order) != null)
 
-                atts.addFlashAttribute("message", "Customer updated successfully");
+                atts.addFlashAttribute("message", "Order updated successfully");
             else
-                atts.addFlashAttribute("message", "Customer update failed.");
+                atts.addFlashAttribute("message", "Order update failed.");
 
             return "redirect:/order/display";
         }
