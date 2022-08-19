@@ -7,8 +7,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@ToString(callSuper = true)  // toString method is used for debugging purposes only --> because of lazy loaded fields performance and memory consumption may occure.
-@Builder
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -16,9 +15,11 @@ import java.math.BigDecimal;
 @SequenceGenerator(name = "idGenerator", sequenceName = "ORDER_ITEMS_SEQ")
 public class OrderItem extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ToString.Exclude
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ToString.Exclude
     private Order order;
 
     @Column(nullable = false)
