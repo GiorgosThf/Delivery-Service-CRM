@@ -1,9 +1,15 @@
 package com.acme.deliveryservice.domain;
 
 import lombok.*;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
 
 
 @Entity
@@ -25,6 +31,7 @@ public class Customer extends BaseModel {
     private  String lastName;
 
     @Column
+    @Email(regexp = ".+@.+\\..+")
     private String emailAddress;
 
     @Column
@@ -43,6 +50,8 @@ public class Customer extends BaseModel {
     @NotNull
     private Boolean active;
 
+    @OneToOne
+    private User user;
 
 
 }
