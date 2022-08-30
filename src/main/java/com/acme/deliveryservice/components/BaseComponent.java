@@ -1,4 +1,4 @@
-package com.acme.deliveryservice.bootstrap;
+package com.acme.deliveryservice.components;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,4 +18,6 @@ public abstract class BaseComponent {
 	public void destroy() {
 		logger.trace("{} is about to be destroyed.", getClass().getName());
 	}
+
+
 }
