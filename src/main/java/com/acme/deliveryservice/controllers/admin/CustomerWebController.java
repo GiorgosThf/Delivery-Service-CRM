@@ -2,7 +2,7 @@ package com.acme.deliveryservice.controllers.admin;
 
 
 import com.acme.deliveryservice.domain.Customer;
-import com.acme.deliveryservice.service.tservice.CustomerService;
+import com.acme.deliveryservice.service.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
