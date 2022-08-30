@@ -9,8 +9,8 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    List<Product> findAllByIsInStockIsTrueOrderById();
 
-    List<Product> getProductsByIsInStockIsFalseOrderById();
+    List<Product> getProductsByIsInStockIsTrue();
 
+    List<Product> getProductsByIsInStockIsFalse();
 }
