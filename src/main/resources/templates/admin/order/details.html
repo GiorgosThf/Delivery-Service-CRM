@@ -12,7 +12,7 @@
 <nav class="navbar navbar-dark bg-dark fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">Simple CRM</a>
+            <a class="navbar-brand" href="/static">Simple CRM</a>
         </div>
     </div>
 </nav>
@@ -108,7 +108,7 @@
                 </h3>
             </div>
 
-            <form class="form" th:each="orderitem : ${orderitems}">
+            <form class="form" th:each="orderitem : ${order.orderItems}">
                 <div class="row">
                     <div class="form-group col-3">
                         <label>Product Name</label>
@@ -121,7 +121,7 @@
                     </div>
                     <div class="form-group col-3">
                         <label>Product Price</label>
-                        <input class="form-control" disabled name="price" th:value="${orderitem.price}"/>
+                        <input class="form-control" disabled name="price" th:value="${orderitem.PPrice}"/>
                     </div>
                     <div class="form-group col-3">
                         <label>Total Price</label>
