@@ -30,7 +30,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/home").authenticated()
-                .antMatchers("/**").hasRole("ADMIN")
+                .antMatchers("/**").hasAnyRole("ADMIN")
                 //  .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -53,7 +53,7 @@ public class SecurityConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().antMatchers("/ignore1", "/ignore2");
+        return web -> web.ignoring().antMatchers("/static", "/ignore2");
     }
 
     @Bean
