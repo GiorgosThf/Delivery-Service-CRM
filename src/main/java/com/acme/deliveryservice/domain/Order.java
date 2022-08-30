@@ -18,6 +18,7 @@ import java.util.Set;
 @Table(name = "ACMEORDER")
 public class Order extends BaseModel {
     @ManyToOne
+    @JoinColumn(name = "CUSTOMER_ID")
     private Customer customer;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -25,7 +26,7 @@ public class Order extends BaseModel {
     private Date submitDate;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
     private Set<OrderItem> orderItems;
 
 

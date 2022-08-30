@@ -13,12 +13,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @Table(name = "STOREITEM")
-@SequenceGenerator(name = "idGenerator", sequenceName = "ORDER_ITEMS_SEQ")
 public class StoreItem extends BaseModel {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @ToString.Exclude
     private Product product;
+
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @ToString.Exclude

@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.math.BigDecimal;
 
+
 @Getter
 @Setter
 @ToString(callSuper = true)
@@ -12,15 +13,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Entity
 @Table(name = "ORDERITEM")
-@SequenceGenerator(name = "idGenerator", sequenceName = "ORDER_ITEMS_SEQ")
 public class OrderItem extends BaseModel {
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @ToString.Exclude
-    private Product product;
+
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "PRODUCT_ID", nullable = false)
     @ToString.Exclude
-    private Order order;
+    private Product product;
 
     @Column(nullable = false)
     private Integer quantity;
@@ -30,4 +29,9 @@ public class OrderItem extends BaseModel {
 
     @Column(precision = 10, scale = 2)
     private BigDecimal totalCost;
+
+    @ManyToOne
+    @JoinColumn(name = "ORDER_ID", nullable = false)
+    private Order order;
+
 }
