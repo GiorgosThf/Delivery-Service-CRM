@@ -1,9 +1,8 @@
-package com.acme.deliveryservice.crm.admin;
+package com.acme.deliveryservice.controllers.admin;
 
 
 import com.acme.deliveryservice.domain.Customer;
-import com.acme.deliveryservice.repository.CustomerRepository;
-import com.acme.deliveryservice.service.CustomerService;
+import com.acme.deliveryservice.service.tservice.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +23,14 @@ public class CustomerWebController {
     public static final Logger logger = LoggerFactory.getLogger(CustomerWebController.class);
 
     @Autowired
-    private final CustomerRepository customerRepository;
-
-    @Autowired
     private final CustomerService customerService;
     @ManyToOne
     private Customer customerDAO;
 
-    public CustomerWebController(CustomerRepository customerRepository, CustomerService customerService) {
-        this.customerRepository = customerRepository;
+    public CustomerWebController(CustomerService customerService) {
         this.customerService = customerService;
     }
+
 
     public Customer getCustomerDAO() {
         return customerDAO;
@@ -44,20 +40,16 @@ public class CustomerWebController {
         this.customerDAO = customerDAO;
     }
 
-    @GetMapping("/")
-    public String index() {
-
-        return "index";
-    }
 
     @GetMapping(value = "/display")
     public String getUsers(Model model) {
-        List<Customer> customers = customerService.getCustomers();
+        List<Customer> customers = customerService.findAll();
         model.addAttribute("customers", customers);
         model.addAttribute("Customer", new Customer());
 
-        return "crm-user/users";
+        return "admin/customer/users";
     }
+
 
     @GetMapping(value = "/active")
     public String getActiveUsers(Model model) {
@@ -65,7 +57,7 @@ public class CustomerWebController {
         model.addAttribute("customers", customers);
         model.addAttribute("Customer", new Customer());
 
-        return "crm-user/users";
+        return "admin/customer/users";
     }
 
     @GetMapping(value = "/inactive")
@@ -74,22 +66,22 @@ public class CustomerWebController {
         model.addAttribute("customers", customers);
         model.addAttribute("Customer", new Customer());
 
-        return "crm-user/users";
+        return "admin/customer/users";
     }
 
 
     @GetMapping("/create")
     public String createUser(Model model) {
         model.addAttribute("customer", new Customer());
-        return "crm-user/create";
+        return "admin/customer/create";
     }
 
     @GetMapping("/edit/{id}")
     public String editUser(@PathVariable String id, Model msg) {
 
-        Customer customer = customerRepository.findById(Long.valueOf(id))
+        Customer customer = customerService.get(Long.valueOf(id));
 
-                .orElseThrow(() -> new IllegalArgumentException("Customer Not Found:" + id));
+        //  .orElseThrow(() -> new IllegalArgumentException("Customer Not Found:" + id));
 
 
         msg.addAttribute("customer", customer);
@@ -97,7 +89,7 @@ public class CustomerWebController {
         customerDAO = customer;
 
         logger.info("Customer: {} {}", customerDAO.getId(), customerDAO.getFirstName());
-        return "crm-user/edit";
+        return "admin/customer/edit";
     }
 
     @PostMapping("/update")
@@ -109,15 +101,12 @@ public class CustomerWebController {
         logger.info("Customer: {}", customer);
         logger.info("Type: {}", customer.getActive());
 
-
+        customerService.update(customer);
         if (bindingResult.hasErrors()) {
-            return "crm-user/edit";
+            atts.addFlashAttribute("message", "Customer update failed.");
+            return "admin/customer/edit";
         } else {
-            if (customerRepository.save(customer) != null)
-
                 atts.addFlashAttribute("message", "Customer updated successfully");
-            else
-                atts.addFlashAttribute("message", "Customer update failed.");
 
             return "redirect:/customer/display";
         }
@@ -125,11 +114,8 @@ public class CustomerWebController {
 
     @PostMapping(value = "/delete")
     public String deleteUser(@RequestParam Long id, Model msg) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Customer Not Found:" + id));
+        customerService.deleteById(id);
         logger.info("Customer: {}", id);
-        customerRepository.delete(customer);
-
         msg.addAttribute("message", "Customer deleted successfully");
         return "redirect:/customer/display";
     }
@@ -141,9 +127,9 @@ public class CustomerWebController {
                        Model model,
                        RedirectAttributes atts) {
         if (bindingResult.hasErrors()) {
-            return "crm-user/create";
+            return "admin/customer/create";
         } else {
-            if (customerService.save(customer) != null)
+            if (customerService.create(customer) != null)
                 atts.addFlashAttribute("message", "Customer created successfully");
             else
                 atts.addFlashAttribute("message", "Customer creation failed.");

@@ -1,11 +1,8 @@
-package com.acme.deliveryservice.crm.admin;
+package com.acme.deliveryservice.controllers.admin;
 
 import com.acme.deliveryservice.domain.Order;
 import com.acme.deliveryservice.domain.OrderItem;
-import com.acme.deliveryservice.repository.OrderItemRepository;
-import com.acme.deliveryservice.repository.OrderRepository;
-import com.acme.deliveryservice.service.OrderItemService;
-import com.acme.deliveryservice.service.OrderService;
+import com.acme.deliveryservice.service.tservice.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,25 +24,18 @@ public class OrderWebController {
     public static final Logger logger = LoggerFactory.getLogger(OrderWebController.class);
 
     @Autowired
-    private final OrderRepository orderRepository;
-
-    @Autowired
     private final OrderService orderService;
-
-    @Autowired
-    private final OrderItemRepository orderItemRepository;
-
-    @Autowired
-    private final OrderItemService orderItemService;
 
     @ManyToOne
     private Order orderDAO;
 
-    public OrderWebController(OrderRepository orderRepository, OrderService orderService, OrderItemRepository orderItemRepository, OrderItemService orderItemService) {
-        this.orderRepository = orderRepository;
+    @ManyToOne
+    private List<OrderItem> orderItemDAO;
+
+    public OrderWebController(OrderService orderService) {
+
         this.orderService = orderService;
-        this.orderItemRepository = orderItemRepository;
-        this.orderItemService = orderItemService;
+
     }
 
     public Order getOrderDAO() {
@@ -58,12 +48,12 @@ public class OrderWebController {
 
     @GetMapping(value = "/display")
     public String getOrders(Model model) {
-        List<Order> orders = orderRepository.findAll();
+        List<Order> orders = orderService.findAll();
 
         model.addAttribute("orders", orders);
         model.addAttribute("Order", new Order());
 
-        return "crm-order/orders";
+        return "admin/order/orders";
     }
 
     @GetMapping("/complete")
@@ -73,7 +63,7 @@ public class OrderWebController {
         model.addAttribute("orders", orders);
         model.addAttribute("Order", new Order());
 
-        return "crm-order/orders";
+        return "admin/order/orders";
     }
 
     @GetMapping("/incomplete")
@@ -83,43 +73,35 @@ public class OrderWebController {
         model.addAttribute("orders", orders);
         model.addAttribute("Order", new Order());
 
-        return "crm-order/orders";
+        return "admin/order/orders";
     }
 
 
     @GetMapping("/details/{id}")
     public String getOrderDetails(@PathVariable String id, Model msg) {
 
-        Order order = orderRepository.findById(Long.valueOf(id))
-                .orElseThrow(() -> new IllegalArgumentException("Order Not Found:" + id));
+        Order order = orderService.get(Long.valueOf(id));
         msg.addAttribute("order", order);
 
-        List<OrderItem> orderitems = orderItemService.findOrderByOrderId(Long.valueOf(id));
-        msg.addAttribute("orderitems", orderitems);
-        msg.addAttribute("orderitem", new OrderItem());
-        return "crm-order/details";
+        return "admin/order/details";
     }
 
     @GetMapping("/create")
     public String createOrder(Model model) {
         model.addAttribute("order", new Order());
-        return "crm-order/create";
+        return "admin/order/create";
     }
 
     @GetMapping("/edit/{id}")
     public String editOrder(@PathVariable String id, Model msg) {
 
-        Order order = orderRepository.findById(Long.valueOf(id))
-
-                .orElseThrow(() -> new IllegalArgumentException("Order Not Found:" + id));
-
-
+        Order order = orderService.get(Long.valueOf(id));
         msg.addAttribute("order", order);
 
         orderDAO = order;
 
         logger.info("Order: {} ", orderDAO);
-        return "crm-order/edit";
+        return "admin/order/edit";
     }
 
     @PostMapping("/update")
@@ -129,27 +111,21 @@ public class OrderWebController {
                               RedirectAttributes atts) {
         order.setId(orderDAO.getId());
         logger.info("Order: {}", order);
+        orderService.update(order);
 
         if (bindingResult.hasErrors()) {
-            return "crm-order/edit";
+            atts.addFlashAttribute("message", "Order update failed.");
+            return "admin/order/edit";
         } else {
-            if (orderRepository.save(order) != null)
-
-                atts.addFlashAttribute("message", "Order updated successfully");
-            else
-                atts.addFlashAttribute("message", "Order update failed.");
-
+            atts.addFlashAttribute("message", "Order updated successfully");
             return "redirect:/order/display";
         }
     }
 
     @PostMapping(value = "/delete")
     public String deleteProduct(@RequestParam Long id, Model msg) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Order Not Found:" + id));
+        orderService.deleteById(id);
         logger.info("Order: {}", id);
-        orderRepository.delete(order);
-
         msg.addAttribute("message", "Order deleted successfully");
         return "redirect:/order/display";
     }
@@ -163,9 +139,9 @@ public class OrderWebController {
 
         logger.info("Order: {} ", order);
         if (bindingResult.hasErrors()) {
-            return "crm-order/create";
+            return "admin/order/create";
         } else {
-            if (orderRepository.save(order) != null)
+            if (orderService.create(order) != null)
                 atts.addFlashAttribute("message", "Order created successfully");
             else
                 atts.addFlashAttribute("message", "Order creation failed.");
